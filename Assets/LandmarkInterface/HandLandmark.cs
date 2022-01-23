@@ -140,7 +140,7 @@ namespace LandmarkInterface
           Vector3 vec1 = landmarkObjects[0].transform.position - landmarkObjects[i].transform.position;
           Vector3 vec2 = landmarkObjects[i].transform.position - landmarkObjects[i+1].transform.position;
           Debug.Log(ind[(i-1) / 4]);
-          allChildren[ind[(i-1) / 4]].localRotation= Quaternion.FromToRotation(vec1, vec2);
+          allChildren[ind[(i-1) / 4]].localRotation = Quaternion.FromToRotation(vec1, vec2);
         }
         else
         {
