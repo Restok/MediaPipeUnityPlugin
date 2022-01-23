@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Global Resource
+  - l-hand
   layers:
   - Default
   - TransparentFX

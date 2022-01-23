@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT.
 
 using System.Collections;
+using LandmarkInterface;
 using UnityEngine;
 
 namespace Mediapipe.Unity.Holistic
@@ -19,6 +20,7 @@ namespace Mediapipe.Unity.Holistic
     [SerializeField] private NormalizedRectAnnotationController _poseRoiAnnotationController;
     [SerializeField] private HolisticTrackingGraph _graphRunner;
     [SerializeField] private TextureFramePool _textureFramePool;
+    public LandmarkResultSet resultSet;
 
     private Coroutine _coroutine;
 
@@ -106,6 +108,7 @@ namespace Mediapipe.Unity.Holistic
         Logger.LogError(TAG, graphInitRequest.error);
         yield break;
       }
+      resultSet.Connected = true;
 
       if (runningMode == RunningMode.Async)
       {
@@ -152,6 +155,18 @@ namespace Mediapipe.Unity.Holistic
 
           // When running synchronously, wait for the outputs here (blocks the main thread).
           var value = _graphRunner.FetchNextValue();
+          if (value.leftHandLandmarks != null)
+          {
+            resultSet.UpdateLandmark(LandmarkType.LeftHand, value.leftHandLandmarks);
+          }
+          if (value.rightHandLandmarks != null)
+          {
+            resultSet.UpdateLandmark(LandmarkType.RightHand, value.rightHandLandmarks);
+          }
+          if (value.poseLandmarks != null)
+          {
+            resultSet.UpdateLandmark(LandmarkType.Pose, value.poseLandmarks);
+          }
           _poseDetectionAnnotationController.DrawNow(value.poseDetection);
           _holisticAnnotationController.DrawNow(value.faceLandmarks, value.poseLandmarks, value.leftHandLandmarks, value.rightHandLandmarks);
           _poseWorldLandmarksAnnotationController.DrawNow(value.poseWorldLandmarks);
