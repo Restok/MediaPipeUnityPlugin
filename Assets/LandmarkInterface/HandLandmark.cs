@@ -117,37 +117,57 @@ namespace LandmarkInterface
       {
         allChildren = GameObject.Find("B-hand_R").GetComponentsInChildren<Transform>();
       }
+      int handadj = (this.LandmarkType == LandmarkType.RightHand) ? 1 : -1;
+
       var wristTransform = LandmarkObjects[0].transform;
       var indexFinger = LandmarkObjects[5].transform.position;
       var middleFinger = LandmarkObjects[9].transform.position;
-
+      var elbowTransform = landmarkObjects[22].transform.position;
       var vectorToMiddle = middleFinger - wristTransform.position;
       var vectorToIndex = indexFinger - wristTransform.position;
       //to get ortho vector of middle finger from index finger
       Vector3.OrthoNormalize(ref vectorToMiddle, ref vectorToIndex);
 
       //vector normal to wrist
+
       Vector3 normalVector = Vector3.Cross(vectorToIndex, vectorToMiddle);
       Debug.DrawRay(allChildren[0].position, normalVector, Color.white);
       Debug.DrawRay(allChildren[0].position, vectorToIndex, Color.yellow);
+      
       allChildren[0].transform.rotation = Quaternion.LookRotation(vectorToIndex * -1, normalVector);
-
+      //var wristMiddleKnuckle = wristTransform.position - middleFinger;
+      //var elbowWrist = elbowTransform - wristTransform.position;
+      //Vector3 currRot = allChildren[0].transform.eulerAngles;
+      //allChildren[0].
       int[] ind = new int[] { 2, 5, 9, 13, 17 };
       for(int i =0; i < 21; i++)
       {
         if (i % 4 == 0) { continue; }
         if ((i - 1) % 4 == 0) {
+
+          if (i == 1)
+          {
+            continue; //figure out later;
+          }
           Vector3 vec1 = landmarkObjects[0].transform.position - landmarkObjects[i].transform.position;
           Vector3 vec2 = landmarkObjects[i].transform.position - landmarkObjects[i+1].transform.position;
-          Debug.Log(ind[(i-1) / 4]);
           allChildren[ind[(i-1) / 4]].localRotation = Quaternion.FromToRotation(vec1, vec2);
         }
         else
         {
-          //Vector3 vec1 = landmarkObjects[i - 1].transform.position - landmarkObjects[i].transform.position;
-          //Vector3 vec2 = landmarkObjects[i].transform.position - landmarkObjects[i + 1].transform.position;
+          Vector3 vec1 = landmarkObjects[i - 1].transform.position - landmarkObjects[i].transform.position;
+          Vector3 vec2 = landmarkObjects[i].transform.position - landmarkObjects[i + 1].transform.position;
+
+          //if(i == 6) { Debug.Log(Vector3.SignedAngle(vec1, vec2, Vector3.Cross(vec1,vec2)));
+          //}
+
+          if ((i < 5)) {
+            allChildren[ind[i / 4] + (i % 4) - 1].localEulerAngles = new Vector3(0, Vector3.SignedAngle(vec1, vec2, Vector3.Cross(vec1, vec2)), 0);
+          }
+          else {
+            allChildren[ind[i / 4] + (i % 4) - 1].localEulerAngles = new Vector3(0, 0, handadj*Vector3.SignedAngle(vec1, vec2, Vector3.Cross(vec1, vec2)));
+          }
           
-          //allChildren[ind[i / 4]+].position = new Vector3(0, 0, Vector3.Angle(vec1, vec2);
 
         }
 
